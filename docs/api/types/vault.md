@@ -79,6 +79,32 @@ interface NearbyParams {
 }
 ```
 
+## VaultCreateV3Params
+
+Parameters for creating a vault with pre-computed hashes (V3 API):
+
+```typescript
+interface VaultCreateV3Params {
+  name: string;
+  engine: EngineName;
+  vault_hashes: string[];
+  radius?: number;
+  payload?: Record<string, unknown>;
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | `string` | Vault name |
+| `engine` | `EngineName` | Engine type |
+| `vault_hashes` | `string[]` | Pre-computed SHA-256 hashes from `buildVaultHashes()` |
+| `radius` | `number` | Optional radius in meters |
+| `payload` | `Record<string, unknown>` | Optional engine-specific data |
+
+:::note
+No signal fields (geohash, salt, pepper, wifi_ssids, ble_device_names, etc.) are accepted. All hashing is done client-side via `buildVaultHashes()`.
+:::
+
 ## DiscoveredVault
 
 Returned by the sentinel endpoint during discovery:

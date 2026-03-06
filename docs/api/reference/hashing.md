@@ -44,6 +44,67 @@ function buildStomp(input: SignalInput): string
 
 The stomp is sent to `POST /sentinal` for vault discovery.
 
+## buildVaultHashes
+
+Generate all SHA-256 hashes for V3 vault creation. This mirrors the server's `Vault#generate_vault_hashes` so raw signals never leave the device.
+
+```typescript
+function buildVaultHashes(input: VaultHashInput): string[]
+```
+
+Returns an array of 64-character hex strings covering every valid combination of the provided signals across the geohash radius.
+
+```typescript
+import { buildVaultHashes } from '@percent20/misuto-react-native-sdk';
+
+// Location-only vault
+const hashes = buildVaultHashes({
+  geohash: 'sv8wrqpg5',
+  radius: 100,
+  salt: 'device-salt-hash',
+  pepper: 'device-pepper-hash',
+});
+
+// Location + WiFi + time-based vault
+const hashes = buildVaultHashes({
+  geohash: 'u4pruydqqvj8',
+  radius: 50,
+  altitude: 42,
+  hourRange: [9, 17],
+  salt: 'device-salt-hash',
+  pepper: 'device-pepper-hash',
+  wifiSsids: ['OfficeWiFi', 'CorpNet'],
+  bleDeviceNames: ['Beacon-01'],
+});
+
+// Use with V3 vault creation
+const vault = await client.vaults.createV3({
+  name: 'My Vault',
+  engine: 'storage',
+  vault_hashes: hashes,
+  radius: 100,
+});
+```
+
+### How It Works
+
+1. **Geohash expansion** — `Geohash.generateOptimizedGeohashes()` finds all geohash cells covering the radius
+2. **Altitude buffer** — ±min(altitude×0.1, 10) integer range
+3. **Heading range** — ±5 degrees
+4. **Hour expansion** — Each hour in the range
+5. **Signal strings** — WiFi SSIDs + BLE names sorted/lowercased, object labels sorted/lowercased, NFC tags sorted/lowercased
+6. **Hash** — For each (geohash × altitude × heading × hour) combination:
+   `SHA256(accountKey + salt + pepper + location + time + devices + objects + freeText + nfc)`
+
+### V2 vs V3
+
+| | V2 (`create`) | V3 (`createV3`) |
+|---|---|---|
+| **Hash computation** | Server-side | Client-side via `buildVaultHashes()` |
+| **Data sent** | Raw signals (geohash, WiFi, BLE, etc.) | Pre-computed SHA-256 hashes only |
+| **Privacy** | Server sees raw signals | Server sees only opaque hashes |
+| **Discovery** | Unchanged (stomp → sentinel) | Unchanged (stomp → sentinel) |
+
 ## Algorithm
 
 1. **Base key** — `accountKey` or `sha256(salt) + sha256(pepper)`

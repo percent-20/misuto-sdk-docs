@@ -90,6 +90,53 @@ interface SignalInput {
 
 The system generates one hash per precision level, so 12 hashes total per time value. This allows the server to match at different geospatial granularities.
 
+## V3: Client-Side Vault Hash Generation
+
+Starting with SDK v0.2.0, you can create vaults with **client-side hash generation**. Instead of sending raw signals (WiFi SSIDs, BLE names, geohash, etc.) to the server, the SDK computes all SHA-256 hashes locally and sends only the resulting hash array.
+
+### Why V3?
+
+- Raw discovery signals **never leave the device**
+- The server receives only opaque 64-character hex strings
+- Vault discovery via sentinel is unchanged — both V2 and V3 vaults are discoverable
+
+### `buildVaultHashes(input)`
+
+```typescript
+import { buildVaultHashes } from '@percent20/misuto-react-native-sdk';
+
+const hashes = buildVaultHashes({
+  geohash: 'sv8wrqpg5',
+  radius: 100,
+  altitude: 42,
+  salt: 'device-salt-hash',
+  pepper: 'device-pepper-hash',
+  wifiSsids: ['OfficeWiFi'],
+  bleDeviceNames: ['Beacon-01'],
+  hourRange: [9, 17],
+});
+
+// Create vault — only hashes are sent to the server
+const vault = await client.vaults.createV3({
+  name: 'My Vault',
+  engine: 'storage',
+  vault_hashes: hashes,
+  radius: 100,
+});
+```
+
+The function generates all valid hash combinations by expanding:
+
+1. Geohash cells covering the radius (via `Geohash.generateOptimizedGeohashes`)
+2. Altitude ±10% buffer as integer range
+3. Heading ±5 degrees
+4. Each hour in the hour range
+5. Sorted/lowercased device, object, NFC, and free text strings
+
+Each combination is hashed as: `SHA256(accountKey + salt + pepper + location + time + devices + objects + freeText + nfc)`
+
+See [`VaultHashInput`](/api/types/hashing#vaulthashinput) for the full type definition and [`buildVaultHashes()`](/api/reference/hashing#buildvaulthashes) for the API reference.
+
 ## Privacy Model
 
 - Raw GPS coordinates never leave the device in discovery requests

@@ -89,3 +89,53 @@ client.vaults.nearby(params: NearbyParams): Promise<NearbyResponse>
 | `radius` | `number` | No | Search radius in meters |
 
 **Route:** `GET /clients/vaults/nearby`
+
+---
+
+### `createV3(params)`
+
+Create a vault with pre-computed hashes (V3). Raw discovery signals never leave the device.
+
+```typescript
+client.vaults.createV3(params: VaultCreateV3Params): Promise<VaultCreateResponse>
+```
+
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | `string` | Yes | Vault name |
+| `engine` | `EngineName` | Yes | Engine type |
+| `vault_hashes` | `string[]` | Yes | Pre-computed SHA-256 hashes |
+| `radius` | `number` | No | Radius in meters |
+| `payload` | `Record<string, unknown>` | No | Engine-specific data |
+
+**Route:** `POST /v3/clients/vaults`
+
+:::tip Privacy-first
+Unlike `create()`, this method accepts only pre-computed hashes — no geohash, salt, pepper, WiFi SSIDs, or BLE device names are sent to the server. Use [`buildVaultHashes()`](/api/reference/hashing#buildvaulthashes) to generate the hashes client-side.
+:::
+
+```typescript
+import { buildVaultHashes } from '@percent20/misuto-react-native-sdk';
+
+const hashes = buildVaultHashes({
+  geohash: 'sv8wrqpg5',
+  radius: 100,
+  salt: 'device-salt-hash',
+  pepper: 'device-pepper-hash',
+  wifiSsids: ['OfficeWiFi'],
+  bleDeviceNames: ['Beacon-01'],
+});
+
+const vault = await client.vaults.createV3({
+  name: 'Private Vault',
+  engine: 'storage',
+  vault_hashes: hashes,
+  radius: 100,
+});
+```
+
+**Constraints:**
+
+- `vault_hashes` must be a non-empty array of 64-character hex strings
+- Maximum 10,000 hashes per vault
+- Signal fields (`geohash`, `salt`, `pepper`, `wifi_ssids`, etc.) are **not accepted** — use `buildVaultHashes()` instead
