@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'Misuto SDK',
-  tagline: 'Location-aware vaults for React Native',
+  tagline: 'Turn the real world into app features',
   favicon: 'img/favicon.ico',
   url: 'https://percent-20.github.io',
   baseUrl: '/misuto-sdk-docs/',

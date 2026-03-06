@@ -4,15 +4,15 @@ import styles from './index.module.css';
 import clsx from 'clsx';
 
 const ENGINES = [
-  { name: 'STORAGE', icon: '📦', desc: 'Geo-fenced file vaults with upload/download' },
-  { name: 'CHAT', icon: '💬', desc: 'Real-time ActionCable conversations' },
-  { name: 'MFA', icon: '🔐', desc: 'Spatial multi-factor authentication' },
-  { name: 'WEBHOOK', icon: '🔗', desc: 'Fire payloads on enter/exit events' },
-  { name: 'DEADROP', icon: '💀', desc: 'Self-destructing single-use file drops' },
-  { name: 'CRYPTO', icon: '₿', desc: '2-of-2 multisig Bitcoin wallets' },
-  { name: 'REWARD', icon: '🎁', desc: 'First-N-visitor reward distribution' },
-  { name: 'PAYLOAD', icon: '📤', desc: 'Deliver preset data on vault entry' },
-  { name: 'MESSAGE', icon: '✉️', desc: 'Push messages on proximity triggers' },
+  { name: 'STORAGE', icon: '📦', desc: 'Files that only exist in a place — open them there or nowhere' },
+  { name: 'CHAT', icon: '💬', desc: 'Conversations that live at a location — walk in to join, walk out to leave' },
+  { name: 'MFA', icon: '🔐', desc: 'Approve actions only when you\'re physically where you should be' },
+  { name: 'WEBHOOK', icon: '🔗', desc: 'Trigger any backend the moment someone arrives or departs' },
+  { name: 'DEADROP', icon: '💀', desc: 'Share a file once — first person to find it gets it, then it\'s gone' },
+  { name: 'CRYPTO', icon: '₿', desc: 'Bitcoin wallets that require your physical presence to spend' },
+  { name: 'REWARD', icon: '🎁', desc: 'Drop rewards in the real world — first visitors claim them' },
+  { name: 'PAYLOAD', icon: '📤', desc: 'Deliver data the instant someone steps into range' },
+  { name: 'MESSAGE', icon: '✉️', desc: 'Messages that appear only when you\'re standing in the right spot' },
 ];
 
 const SENSORS = [
@@ -27,13 +27,13 @@ const SENSORS = [
 ];
 
 const USE_CASES = [
-  { industry: 'Gaming', desc: 'Loot boxes, treasure hunts, guild halls', link: '/use-cases/gaming' },
-  { industry: 'Healthcare', desc: 'Spatial compliance, geo-fenced records', link: '/use-cases/healthcare' },
-  { industry: 'Retail', desc: 'In-store coupons, NFC product scanning', link: '/use-cases/retail' },
-  { industry: 'Real Estate', desc: 'Property docs at location, open-house chat', link: '/use-cases/real-estate' },
-  { industry: 'Logistics', desc: 'Chain-of-custody, cargo handoffs', link: '/use-cases/logistics' },
-  { industry: 'Education', desc: 'Lecture discussions, attendance gamification', link: '/use-cases/education' },
-  { industry: 'Government', desc: 'Multi-signal classified access', link: '/use-cases/government' },
+  { industry: 'Gaming', desc: 'Hide loot in real places. Race to find it. First one there wins.', link: '/use-cases/gaming' },
+  { industry: 'Healthcare', desc: 'Patient records that can\'t leave the building. Literally.', link: '/use-cases/healthcare' },
+  { industry: 'Retail', desc: 'Walk into a store, offers appear. Walk out, they\'re gone.', link: '/use-cases/retail' },
+  { industry: 'Real Estate', desc: 'View property docs only at the property. Tour the house, see the data.', link: '/use-cases/real-estate' },
+  { industry: 'Logistics', desc: 'Prove chain-of-custody with physics, not paperwork.', link: '/use-cases/logistics' },
+  { industry: 'Education', desc: 'Show up to class to join the discussion. Attendance built in.', link: '/use-cases/education' },
+  { industry: 'Government', desc: 'Access that requires the right place, device, badge, and time — all at once.', link: '/use-cases/government' },
 ];
 
 const CODE_TABS = [
@@ -125,12 +125,12 @@ function Hero() {
     <section className={styles.hero}>
       <div className={styles.heroInner}>
         <h1 className={styles.heroTitle}>
-          Location-aware vaults<br />for React Native
+          Turn the real world<br />into app features
         </h1>
         <p className={styles.heroSubtitle}>
-          Build apps that create, discover, and interact with encrypted vaults
-          tied to physical locations. 9 vault engines, 8 sensor types,
-          real-time chat, and enterprise MFA — in one SDK.
+          Your users' surroundings become the interface. GPS, Bluetooth, WiFi,
+          NFC, barometer, camera — the Misuto SDK reads the environment and
+          unlocks features based on where people are and what's around them.
         </p>
         <div className={styles.heroCtas}>
           <a href="/misuto-sdk-docs/getting-started/installation" className={styles.ctaPrimary}>
@@ -163,9 +163,9 @@ function EnginesGrid() {
   return (
     <section className={styles.section}>
       <div className={styles.container}>
-        <h2 className={styles.sectionTitle}>9 Vault Engines</h2>
+        <h2 className={styles.sectionTitle}>9 Ways to Use a Place</h2>
         <p className={styles.sectionSubtitle}>
-          Each engine defines how a vault behaves when discovered.
+          Each engine turns a physical location into a different kind of experience.
         </p>
         <div className={styles.enginesGrid}>
           {ENGINES.map((engine) => (
@@ -185,9 +185,10 @@ function SensorStrip() {
   return (
     <section className={clsx(styles.section, styles.sensorSection)}>
       <div className={styles.container}>
-        <h2 className={styles.sectionTitle}>8 Sensor Types</h2>
+        <h2 className={styles.sectionTitle}>Your Environment Is the Input</h2>
         <p className={styles.sectionSubtitle}>
-          Combine multiple signals to create multi-factor vault access requirements.
+          The SDK reads 8 types of environmental signals. Stack them to make features
+          that require the right place, the right time, and the right surroundings.
         </p>
         <div className={styles.sensorStrip}>
           {SENSORS.map((sensor) => (
@@ -211,7 +212,7 @@ function CodePreview() {
   return (
     <section className={styles.section}>
       <div className={styles.container}>
-        <h2 className={styles.sectionTitle}>See It in Action</h2>
+        <h2 className={styles.sectionTitle}>A Few Lines of Code</h2>
         <div className={styles.codeTabs}>
           {CODE_TABS.map((tab, i) => (
             <button
@@ -237,7 +238,7 @@ function UseCases() {
   return (
     <section className={clsx(styles.section, styles.useCasesSection)}>
       <div className={styles.container}>
-        <h2 className={styles.sectionTitle}>Built for Every Industry</h2>
+        <h2 className={styles.sectionTitle}>What Will You Build?</h2>
         <div className={styles.useCasesGrid}>
           {USE_CASES.map((uc) => (
             <a key={uc.industry} href={`/misuto-sdk-docs${uc.link}`} className={styles.useCaseCard}>
@@ -255,7 +256,7 @@ function BottomCta() {
   return (
     <section className={styles.bottomCta}>
       <div className={styles.container}>
-        <h2 className={styles.ctaTitle}>Start Building</h2>
+        <h2 className={styles.ctaTitle}>Make Places Programmable</h2>
         <div className={styles.installCommand}>
           <code>yarn add @percent20/misuto-react-native-sdk</code>
         </div>
@@ -270,8 +271,8 @@ function BottomCta() {
 export default function Home(): React.JSX.Element {
   return (
     <Layout
-      title="Location-aware vaults for React Native"
-      description="Build apps that create, discover, and interact with encrypted vaults tied to physical locations."
+      title="Turn the real world into app features"
+      description="The Misuto SDK lets your React Native app read the environment — GPS, Bluetooth, WiFi, NFC, and more — to unlock features based on where people are and what's around them."
     >
       <Hero />
       <EnginesGrid />
