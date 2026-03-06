@@ -54,6 +54,131 @@ client.vaults.create(params: VaultCreateParams): Promise<VaultCreateResponse>
 
 **Route:** `POST /clients/vaults`
 
+#### Payload Examples by Engine
+
+**STORAGE** — File storage vault. No payload required at creation; files are uploaded separately.
+
+```typescript
+await client.vaults.create({
+  name: 'Team Documents',
+  engine: 'storage',
+  geohash: 'u4pruydqqvj8',
+  radius: 50,
+});
+```
+
+**WEBHOOK** — Fires an HTTP request to a URL when a user enters or exits.
+
+```typescript
+await client.vaults.create({
+  name: 'Office Check-in',
+  engine: 'webhook',
+  geohash: 'u4pruydqqvj8',
+  radius: 100,
+  webhook_url: 'https://example.com/hooks/checkin',
+});
+```
+
+**PAYLOAD** — Returns a custom data object to the discovering user.
+
+```typescript
+await client.vaults.create({
+  name: 'Promo Data',
+  engine: 'payload',
+  geohash: 'u4pruydqqvj8',
+  radius: 200,
+  payload: {
+    coupon_code: 'SAVE20',
+    message: 'Welcome! Enjoy 20% off.',
+    expires_at: '2026-12-31',
+  },
+});
+```
+
+**MESSAGE** — Delivers a preset message to the discovering user.
+
+```typescript
+await client.vaults.create({
+  name: 'Welcome Message',
+  engine: 'message',
+  geohash: 'u4pruydqqvj8',
+  radius: 50,
+  payload: {
+    text: 'Welcome to the museum! Ask the front desk for a free audio guide.',
+  },
+});
+```
+
+**CHAT** — Real-time conversation room via WebSocket.
+
+```typescript
+await client.vaults.create({
+  name: 'Lobby Chat',
+  engine: 'chat',
+  geohash: 'u4pruydqqvj8',
+  radius: 100,
+});
+```
+
+**REWARD** — Rewards the first N unique visitors.
+
+```typescript
+await client.vaults.create({
+  name: 'Early Bird Reward',
+  engine: 'reward',
+  geohash: 'u4pruydqqvj8',
+  radius: 50,
+  track_visitors: true,
+});
+```
+
+**MFA** — Location-based multi-factor authentication vault.
+
+```typescript
+await client.vaults.create({
+  name: 'Office MFA',
+  engine: 'mfa',
+  geohash: 'u4pruydqqvj8',
+  radius: 100,
+  payload: {
+    instance_id: '550e8400-e29b-41d4-a716-446655440000',
+    instance_name: 'Corporate SSO',
+  },
+});
+```
+
+**DEADROP** — Self-destructing single-file vault. First open consumes it.
+
+```typescript
+await client.vaults.create({
+  name: 'Secret Document',
+  engine: 'deadrop',
+  geohash: 'u4pruydqqvj8',
+  radius: 25,
+  payload: {
+    ttl: 300, // viewing window in seconds (5 minutes)
+  },
+});
+// After creation, upload the file via the uploads API
+```
+
+**CRYPTO** — Bitcoin wallet with 2-of-2 multisig. The server generates its key pair and returns the multisig address.
+
+```typescript
+await client.vaults.create({
+  name: 'BTC Wallet',
+  engine: 'crypto',
+  geohash: 'u4pruydqqvj8',
+  radius: 100,
+  payload: {
+    public_address: '02a1633cafcc01ebfb6d78e39f687a1f0995c62fc95f51ead10a02ee0be551b5dc',
+    network: 'mainnet',
+    spending_limit_sats: 100000,
+  },
+});
+// Response includes: multisig_address, server_pubkey, witness_script
+```
+
 ### `update(id, params)`
 
 Update a vault.
@@ -139,3 +264,142 @@ const vault = await client.vaults.createV3({
 - `vault_hashes` must be a non-empty array of 64-character hex strings
 - Maximum 10,000 hashes per vault
 - Signal fields (`geohash`, `salt`, `pepper`, `wifi_ssids`, etc.) are **not accepted** — use `buildVaultHashes()` instead
+
+#### V3 Payload Examples by Engine
+
+All examples below assume hashes are pre-built:
+
+```typescript
+import { buildVaultHashes } from '@percent20/misuto-react-native-sdk';
+
+const hashes = buildVaultHashes({
+  geohash: 'u4pruydqqvj8',
+  radius: 100,
+  salt: 'device-salt',
+  pepper: 'device-pepper',
+});
+```
+
+**STORAGE** — File storage vault.
+
+```typescript
+await client.vaults.createV3({
+  name: 'Team Documents',
+  engine: 'storage',
+  vault_hashes: hashes,
+  radius: 50,
+});
+```
+
+**WEBHOOK** — Fires an HTTP request on enter/exit. Pass `webhook_url` inside `payload`.
+
+```typescript
+await client.vaults.createV3({
+  name: 'Office Check-in',
+  engine: 'webhook',
+  vault_hashes: hashes,
+  radius: 100,
+  payload: {
+    webhook_url: 'https://example.com/hooks/checkin',
+  },
+});
+```
+
+**PAYLOAD** — Returns custom data to the discovering user.
+
+```typescript
+await client.vaults.createV3({
+  name: 'Promo Data',
+  engine: 'payload',
+  vault_hashes: hashes,
+  radius: 200,
+  payload: {
+    coupon_code: 'SAVE20',
+    message: 'Welcome! Enjoy 20% off.',
+    expires_at: '2026-12-31',
+  },
+});
+```
+
+**MESSAGE** — Delivers a preset message.
+
+```typescript
+await client.vaults.createV3({
+  name: 'Welcome Message',
+  engine: 'message',
+  vault_hashes: hashes,
+  radius: 50,
+  payload: {
+    text: 'Welcome to the museum! Ask the front desk for a free audio guide.',
+  },
+});
+```
+
+**CHAT** — Real-time conversation room.
+
+```typescript
+await client.vaults.createV3({
+  name: 'Lobby Chat',
+  engine: 'chat',
+  vault_hashes: hashes,
+  radius: 100,
+});
+```
+
+**REWARD** — Rewards the first N unique visitors.
+
+```typescript
+await client.vaults.createV3({
+  name: 'Early Bird Reward',
+  engine: 'reward',
+  vault_hashes: hashes,
+  radius: 50,
+});
+```
+
+**MFA** — Location-based multi-factor authentication.
+
+```typescript
+await client.vaults.createV3({
+  name: 'Office MFA',
+  engine: 'mfa',
+  vault_hashes: hashes,
+  radius: 100,
+  payload: {
+    instance_id: '550e8400-e29b-41d4-a716-446655440000',
+    instance_name: 'Corporate SSO',
+  },
+});
+```
+
+**DEADROP** — Self-destructing single-file vault.
+
+```typescript
+await client.vaults.createV3({
+  name: 'Secret Document',
+  engine: 'deadrop',
+  vault_hashes: hashes,
+  radius: 25,
+  payload: {
+    ttl: 300,
+  },
+});
+// After creation, upload the file via the uploads API
+```
+
+**CRYPTO** — Bitcoin wallet with 2-of-2 multisig.
+
+```typescript
+await client.vaults.createV3({
+  name: 'BTC Wallet',
+  engine: 'crypto',
+  vault_hashes: hashes,
+  radius: 100,
+  payload: {
+    public_address: '02a1633cafcc01ebfb6d78e39f687a1f0995c62fc95f51ead10a02ee0be551b5dc',
+    network: 'mainnet',
+    spending_limit_sats: 100000,
+  },
+});
+// Response includes: multisig_address, server_pubkey, witness_script
+```
